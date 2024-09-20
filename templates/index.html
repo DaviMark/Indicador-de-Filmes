@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmes</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/7295/7295380.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+
+    <style>
+        /* Estilos existentes */
+        body {
+            overflow-x: hidden; /* Esconde a barra de rolagem horizontal */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin-bottom: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+        .swiper-container {
+            width: 85%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .filme {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        .filme img {
+            width: 200px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .sinopse {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .avaliacao {
+            font-weight: bold;
+            color: #007ACC;
+        }
+        .share-buttons {
+            margin-top: 20px;
+        }
+        .share-buttons a {
+            margin: 0 10px;
+            color: #fff;
+            text-decoration: none;
+        }
+        ::-webkit-scrollbar {
+            width: 12px; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #007ACC;
+            border-radius: 6px; 
+        }
+        .button_subir a {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: #fff;
+            background: #000;
+            padding: 7px 12px;
+            font-size: 18px;
+            border-radius: 6px;
+            box-shadow: rgba(0, 0, 0, 0.15);
+            z-index: 1001; /* Z-index maior que o modal */
+        }
+        footer {
+            background-color: rgba(0, 122, 204, 0.4);
+            color: #fff;
+            font-size: 14px;
+            bottom: 0;
+            position: fixed;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 999;
+        }
+        footer p {
+            margin: 3px 0;
+        }
+
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Z-index alto para sobrepor tudo */
+        }
+        .share-modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            z-index: 1001; /* Z-index maior que o modal */
+        }
+
+    </style>
+</head>
+<body id="page1">
+    <div class="col-md-6">
+        <div class="card">
+            <h1>Selecione uma Opção</h1>
+            <form id="genreForm">
+                <div class="mb-3">
+                    <select name="genero" class="form-select" id="floatingSelect" aria-label="Floating label select example" required>
+                        <option value="mais premiados">Mais Premiados de todos os tempos</option>
+                        <option value="mais assistidos">Mais Assistidos</option>
+                        <option value="recém lançados">Recém Lançados</option>
+                        <option value="ação">Ação</option>
+                        <option value="comédia">Comédia</option>
+                        <option value="drama">Drama</option>
+                        <option value="fantasia">Fantasia</option>
+                        <option value="terror">Terror</option>
+                        <option value="romance">Romance</option>
+                        <option value="ficção científica">Ficção Científica</option>
+                        <option value="aventura">Aventura</option>
+                    </select>
+                    <br>
+                    <button type="submit" class="btn btn-outline-info">Buscar Filmes</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Swiper container for the carousel -->
+        <div class="swiper-container">
+            <div class="swiper-wrapper" id="filmesContainer">
+                <!-- Os filmes aparecerão aqui como slides -->
+            </div>
+            
+            <!-- Botões de navegação -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+
+    </div>
+
+    <br>
+
+    <footer>
+        <p>
+            Desenvolvido por
+            <a target="_blank" href="https://davimarques.netlify.app/" style="text-decoration: none;">Davi Marques</a>.
+        </p>
+    </footer>
+
+    <div class="button_subir">
+        <a href="#page1"><i class="fas fa-arrow-up"></i></a>
+    </div>
+
+    <!-- Modal de compartilhamento -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <h4>Compartilhe <span id="currentMovie">seu filme</span></h4>
+            <a id="shareFacebook" href="#" target="_blank" class="btn btn-primary">
+                <i class="fab fa-facebook-f"></i> Facebook
+            </a>
+            <a id="shareWhatsApp" href="#" target="_blank" class="btn btn-success">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+            <button id="closeModal" class="btn btn-secondary">Fechar</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+    <script>
+        let currentMovie; // Variável para armazenar o filme atual
+
+        document.getElementById('genreForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('/filmes', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('filmesContainer');
+                container.innerHTML = '';
+                if (data.error) {
+                    container.innerHTML = `<p>${data.error}</p>`;
+                } else {
+                    data.forEach(filme => {
+                        const slide = document.createElement('div');
+                        slide.classList.add('swiper-slide');
+                        slide.innerHTML = `
+                            <div class="filme">
+                                <img src="${filme.poster_url}" alt="${filme.title}">
+                                <div>
+                                    <h3>${filme.title}</h3>
+                                    <p class="sinopse">${filme.sinopse}</p>
+                                    <p class="avaliacao">Avaliação: ${filme.avaliacao}/10</p>
+                                    <button class="btn btn-outline-primary share-button" data-title="${filme.title}" data-url="${filme.poster_url}">Compartilhar</button>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(slide);
+                    });
+
+                    // Inicializa o Swiper
+                    const swiper = new Swiper('.swiper-container', {
+                        loop: true,
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true,
+                        },
+                        slidesPerView: 1,
+                        spaceBetween: 20,
+                    });
+
+                    // Adiciona eventos aos botões de compartilhamento
+                    document.querySelectorAll('.share-button').forEach(button => {
+                        button.addEventListener('click', function() {
+                            currentMovie = this.getAttribute('data-title'); // Atualiza o filme atual
+                            const posterUrl = this.getAttribute('data-url');
+                            document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(posterUrl)}`;
+                            document.getElementById('shareWhatsApp').href = `https://api.whatsapp.com/send?text=Confira esse filme: ${encodeURIComponent(currentMovie)} - ${encodeURIComponent(posterUrl)}`;
+                            document.getElementById('shareModal').style.display = 'flex';
+                        });
+                    });
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        // Evento de fechar o modal
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('shareModal').style.display = 'none';
+        });
+
+        // Fecha o modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('shareModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
